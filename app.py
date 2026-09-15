@@ -2,11 +2,6 @@
 app.py
 -------
 Streamlit front-end for the Fake News Detection project.
-
-Run AFTER train_model.py has created 'fake_news_model.pkl' and
-'tfidf_vectorizer.pkl' in the same folder.
-
-    streamlit run app.py
 """
 
 import re
@@ -62,16 +57,23 @@ except FileNotFoundError:
     )
     st.stop()
 
-user_input = st.text_area("Enter news text here:", height=200, placeholder="Paste article title/content...")
+if "news_input" not in st.session_state:
+    st.session_state.news_input = ""
+
+
+def clear_text():
+    st.session_state.news_input = ""
+
+
+user_input = st.text_area(
+    "Enter news text here:", height=200, placeholder="Paste article title/content...", key="news_input"
+)
 
 col1, col2 = st.columns(2)
 with col1:
     predict_clicked = st.button("🔍 Check News", use_container_width=True)
 with col2:
-    clear_clicked = st.button("🗑️ Clear", use_container_width=True)
-
-if clear_clicked:
-    st.rerun()
+    st.button("🗑️ Clear", use_container_width=True, on_click=clear_text)
 
 if predict_clicked:
     if not user_input.strip():
