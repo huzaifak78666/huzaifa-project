@@ -8,6 +8,8 @@ import re
 import string
 import joblib
 import streamlit as st
+from PIL import Image
+import pytesseract
 
 import nltk
 from nltk.corpus import stopwords
@@ -31,6 +33,24 @@ def clean_text(text: str) -> str:
     tokens = text.split()
     tokens = [stemmer.stem(w) for w in tokens if w not in stop_words and len(w) > 2]
     return " ".join(tokens)
+
+
+def predict_and_show(text_to_check: str):
+    """Runs the model on given text and displays result."""
+    cleaned = clean_text(text_to_check)
+    vec = vectorizer.transform([cleaned])
+    prediction = model.predict(vec)[0]
+    probability = model.predict_proba(vec)[0]
+    confidence = max(probability) * 100
+
+    if prediction == 1:
+        st.success(f"✅ This looks like **REAL** news (confidence: {confidence:.1f}%)")
+    else:
+        st.error(f"⚠️ This looks like **FAKE** news (confidence: {confidence:.1f}%)")
+
+    with st.expander("See prediction probabilities"):
+        st.write(f"Fake: {probability[0]*100:.1f}%")
+        st.write(f"Real: {probability[1]*100:.1f}%")
 
 
 @st.cache_resource
@@ -79,24 +99,42 @@ if predict_clicked:
     if not user_input.strip():
         st.warning("Please enter some text to analyze.")
     else:
-        cleaned = clean_text(user_input)
-        vec = vectorizer.transform([cleaned])
-        prediction = model.predict(vec)[0]
-        probability = model.predict_proba(vec)[0]
+        predict_and_show(user_input)
 
-        confidence = max(probability) * 100
+# ---------------------------------------------------------------------------
+# Image / Photo input section
+# ---------------------------------------------------------------------------
+st.markdown("---")
+st.subheader("📷 Or check a news photo/screenshot")
 
-        if prediction == 1:
-            st.success(f"✅ This looks like **REAL** news (confidence: {confidence:.1f}%)")
-        else:
-            st.error(f"⚠️ This looks like **FAKE** news (confidence: {confidence:.1f}%)")
+img_option = st.radio("Choose input method:", ["📁 Upload from gallery", "📸 Take a photo"], horizontal=True)
 
-        with st.expander("See prediction probabilities"):
-            st.write(f"Fake: {probability[0]*100:.1f}%")
-            st.write(f"Real: {probability[1]*100:.1f}%")
+image_file = None
+if img_option == "📁 Upload from gallery":
+    image_file = st.file_uploader("Upload an image (screenshot of a news article)", type=["png", "jpg", "jpeg"])
+else:
+    image_file = st.camera_input("Take a photo of the news article")
+
+if image_file is not None:
+    image = Image.open(image_file)
+    st.image(image, caption="Selected Image", use_container_width=True)
+
+    with st.spinner("Reading text from image..."):
+        try:
+            extracted_text = pytesseract.image_to_string(image)
+        except Exception as e:
+            extracted_text = ""
+            st.error(f"OCR error: {e}")
+
+    if extracted_text.strip():
+        st.text_area("Extracted Text (editable):", extracted_text, height=150, key="extracted_text")
+        if st.button("🔍 Check This Extracted News", use_container_width=True):
+            predict_and_show(st.session_state.extracted_text)
+    else:
+        st.warning("Could not read any text from this image. Try a clearer, well-lit photo.")
 
 st.markdown("---")
 st.caption(
     "Model: Logistic Regression + TF-IDF | Dataset: Kaggle Fake and Real News Dataset | "
-    "Built with Streamlit, scikit-learn, pandas, NLTK, joblib"
+    "Built with Streamlit, scikit-learn, pandas, NLTK, joblib, Pillow, pytesseract"
 )
