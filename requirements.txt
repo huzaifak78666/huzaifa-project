@@ -5,3 +5,4 @@ nltk
 joblib
 pytesseract
 Pillow
+duckduckgo-search
