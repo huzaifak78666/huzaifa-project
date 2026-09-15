@@ -7,10 +7,10 @@ Streamlit front-end for the Fake News Detection project.
 import re
 import string
 import joblib
+import requests
 import streamlit as st
 from PIL import Image
 import pytesseract
-from duckduckgo_search import DDGS
 
 import nltk
 from nltk.corpus import stopwords
@@ -26,8 +26,8 @@ VECTORIZER_PATH = "tfidf_vectorizer.pkl"
 TRUSTED_DOMAINS = [
     "bbc.com", "reuters.com", "apnews.com", "ndtv.com", "thehindu.com",
     "timesofindia.indiatimes.com", "indianexpress.com", "hindustantimes.com",
-    "cnn.com", "aljazeera.com", "theguardian.com", "npr.org", "pti.co.in",
-    "livemint.com", "business-standard.com",
+    "cnn.com", "aljazeera.com", "theguardian.com", "npr.org",
+    "livemint.com", "business-standard.com", "news18.com",
 ]
 
 
@@ -63,25 +63,51 @@ def predict_and_show(text_to_check: str):
 
 
 def web_verify_and_show(text_to_check: str):
-    """Searches the live web to see if trusted news sources cover this story."""
+    """Searches live news via NewsAPI to see if trusted sources cover this story."""
     st.subheader("🌐 Live Web Verification")
-    query = text_to_check.strip()[:150]  # keep query short
 
-    with st.spinner("Searching the web for matching news..."):
+    api_key = st.secrets.get("NEWSAPI_KEY", None)
+    if not api_key:
+        st.error("NewsAPI key not configured. Add NEWSAPI_KEY in app Secrets settings.")
+        return
+
+    query = text_to_check.strip()[:100]
+
+    with st.spinner("Searching live news for matching stories..."):
         try:
-            results = list(DDGS().text(query, max_results=8))
+            response = requests.get(
+                "https://newsapi.org/v2/everything",
+                params={
+                    "q": query,
+                    "apiKey": api_key,
+                    "sortBy": "relevancy",
+                    "pageSize": 6,
+                    "language": "en",
+                },
+                timeout=10,
+            )
+            data = response.json()
         except Exception as e:
             st.warning(f"Could not complete web search right now ({e}). Try again in a moment.")
             return
 
-    if not results:
+    if data.get("status") != "ok":
+        st.warning(f"Search service returned an error: {data.get('message', 'Unknown error')}")
+        return
+
+    articles = data.get("articles", [])
+
+    if not articles:
         st.warning(
             "⚠️ No matching articles found online. This could mean the news is "
             "very new, very obscure, or possibly fabricated."
         )
         return
 
-    trusted_hits = [r for r in results if any(d in r.get("href", "") for d in TRUSTED_DOMAINS)]
+    trusted_hits = [
+        a for a in articles
+        if any(d in (a.get("url") or "") for d in TRUSTED_DOMAINS)
+    ]
 
     if trusted_hits:
         st.success(f"✅ Found {len(trusted_hits)} matching result(s) from trusted news sources — likely REAL.")
@@ -92,13 +118,14 @@ def web_verify_and_show(text_to_check: str):
         )
 
     st.write("**Top search results:**")
-    for r in results[:5]:
-        title = r.get("title", "No title")
-        href = r.get("href", "")
-        body = r.get("body", "")
-        st.markdown(f"- [{title}]({href})")
-        if body:
-            st.caption(body[:150] + "...")
+    for a in articles[:5]:
+        title = a.get("title", "No title")
+        url = a.get("url", "")
+        source = (a.get("source") or {}).get("name", "")
+        description = a.get("description", "") or ""
+        st.markdown(f"- [{title}]({url}) — *{source}*")
+        if description:
+            st.caption(description[:150] + "...")
 
 
 @st.cache_resource
@@ -197,5 +224,5 @@ if image_file is not None:
 st.markdown("---")
 st.caption(
     "Model: Logistic Regression + TF-IDF | Dataset: Kaggle Fake and Real News Dataset | "
-    "Built with Streamlit, scikit-learn, pandas, NLTK, joblib, Pillow, pytesseract, duckduckgo-search"
+    "Built with Streamlit, scikit-learn, pandas, NLTK, joblib, Pillow, pytesseract, NewsAPI"
 )
