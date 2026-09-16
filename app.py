@@ -1,5 +1,5 @@
 """
-app.py - Light Decorated Version - 100% working
+app.py - Final English Version
 """
 
 import re
@@ -28,7 +28,6 @@ TRUSTED_DOMAINS = [
 
 st.set_page_config(page_title="Fake News Detector", page_icon="📰", layout="centered")
 
-# LIGHT CSS - safe
 st.markdown("""
 <style>
    .stTextArea textarea {
@@ -131,7 +130,7 @@ def load_artifacts():
     return model, vectorizer
 
 st.title("📰 Fake News Detection Using Machine Learning")
-st.info("Paste a news headline or article below. AI + Live Web double check karega.")
+st.info("Paste a news headline or article below. The system will provide both an AI pattern-based prediction and a live web verification check.")
 st.write("")
 
 try:
@@ -159,13 +158,13 @@ with col3:
 
 if predict_clicked:
     if not user_input.strip():
-        st.warning("Please enter some text.")
+        st.warning("Please enter some text to analyze.")
     else:
         predict_and_show(user_input)
 
 if web_clicked:
     if not user_input.strip():
-        st.warning("Please enter some text.")
+        st.warning("Please enter some text to analyze.")
     else:
         web_verify_and_show(user_input)
 
