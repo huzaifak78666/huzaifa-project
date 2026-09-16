@@ -1,5 +1,5 @@
 """
-app.py - Final Pro Design - English
+app.py - Final Pro Design with Colourful Header
 """
 
 import re
@@ -26,26 +26,47 @@ TRUSTED_DOMAINS = [
 
 st.set_page_config(page_title="Fake News Detector", page_icon="📰", layout="centered")
 
-# ---------- PRO CSS ----------
+# ---------- PRO CSS WITH COLOURFUL HEADER ----------
 st.markdown("""
 <style>
    .main-header {
-        background: white;
-        padding: 30px;
+        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #06b6d4 100%);
+        padding: 35px 30px;
         border-radius: 20px;
         text-align: center;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.07);
-        border: 1px solid #eef2f7;
-        margin-bottom: 20px;
+        box-shadow: 0 15px 35px rgba(79, 70, 229, 0.25);
+        margin-bottom: 25px;
+        border: none;
+        position: relative;
+        overflow: hidden;
+    }
+   .main-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+        pointer-events: none;
     }
    .main-header h1 {
-        font-size: 36px!important;
-        color: #111827!important;
-        margin-bottom: 5px!important;
+        font-size: 38px!important;
+        color: white!important;
+        margin-bottom: 12px!important;
+        font-weight: 800!important;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        line-height: 1.2!important;
+        position: relative;
     }
    .main-header p {
-        color: #6b7280!important;
-        font-size: 15px;
+        color: rgba(255,255,255,0.92)!important;
+        font-size: 16px!important;
+        font-weight: 400!important;
+        max-width: 700px;
+        margin: 0 auto!important;
+        line-height: 1.6!important;
+        position: relative;
     }
    .stTextArea textarea {
         border-radius: 14px!important;
@@ -57,7 +78,6 @@ st.markdown("""
         border: 1.5px solid #6366f1!important;
         background: white!important;
     }
-    /* Buttons */
    .stButton button {
         border-radius: 12px!important;
         height: 52px;
@@ -82,7 +102,7 @@ st.markdown("""
     }
    .stButton button:hover {
         transform: translateY(-1px);
-        box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        box-shadow: 0 6px 15px rgba(0,0,0,0.15);
     }
    .feature-box {
         background: #f8fafc;
@@ -165,7 +185,6 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# How it works
 with st.expander("ℹ️ How it works?"):
     col1, col2, col3 = st.columns(3)
     col1.markdown('<div class="feature-box">🤖<br><b>AI Check</b><br>Logistic Regression + TF-IDF</div>', unsafe_allow_html=True)
