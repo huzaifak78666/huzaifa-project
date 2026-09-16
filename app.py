@@ -185,18 +185,12 @@ if web_clicked:
         web_verify_and_show(user_input)
 
 # ---------------------------------------------------------------------------
-# Image / Photo input section
+# Image / Photo input section (gallery upload only)
 # ---------------------------------------------------------------------------
 st.markdown("---")
 st.subheader("📷 Or check a news photo/screenshot")
 
-img_option = st.radio("Choose input method:", ["📁 Upload from gallery", "📸 Take a photo"], horizontal=True)
-
-image_file = None
-if img_option == "📁 Upload from gallery":
-    image_file = st.file_uploader("Upload an image (screenshot of a news article)", type=["png", "jpg", "jpeg"])
-else:
-    image_file = st.camera_input("Take a photo of the news article")
+image_file = st.file_uploader("Upload an image (screenshot of a news article)", type=["png", "jpg", "jpeg"])
 
 if image_file is not None:
     image = Image.open(image_file)
