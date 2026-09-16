@@ -1,5 +1,5 @@
 """
-app.py - Final Pro Design with Colourful Header
+app.py - Final Version with Colourful Header & Solid Buttons
 """
 
 import re
@@ -22,11 +22,12 @@ TRUSTED_DOMAINS = [
     "bbc.com", "reuters.com", "apnews.com", "ndtv.com", "thehindu.com",
     "timesofindia.indiatimes.com", "indianexpress.com", "hindustantimes.com",
     "cnn.com", "aljazeera.com", "theguardian.com", "npr.org",
+    "livemint.com", "business-standard.com", "news18.com",
 ]
 
 st.set_page_config(page_title="Fake News Detector", page_icon="📰", layout="centered")
 
-# ---------- PRO CSS WITH COLOURFUL HEADER ----------
+# ---------- CSS - HEADER + SOLID BUTTONS ----------
 st.markdown("""
 <style>
    .main-header {
@@ -37,36 +38,19 @@ st.markdown("""
         box-shadow: 0 15px 35px rgba(79, 70, 229, 0.25);
         margin-bottom: 25px;
         border: none;
-        position: relative;
-        overflow: hidden;
-    }
-   .main-header::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
-        pointer-events: none;
     }
    .main-header h1 {
-        font-size: 38px!important;
+        font-size: 36px!important;
         color: white!important;
-        margin-bottom: 12px!important;
+        margin-bottom: 10px!important;
         font-weight: 800!important;
         text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        line-height: 1.2!important;
-        position: relative;
     }
    .main-header p {
         color: rgba(255,255,255,0.92)!important;
         font-size: 16px!important;
-        font-weight: 400!important;
         max-width: 700px;
         margin: 0 auto!important;
-        line-height: 1.6!important;
-        position: relative;
     }
    .stTextArea textarea {
         border-radius: 14px!important;
@@ -74,35 +58,27 @@ st.markdown("""
         background: #f9fafb!important;
         font-size: 15px!important;
     }
-   .stTextArea textarea:focus {
-        border: 1.5px solid #6366f1!important;
-        background: white!important;
+    /* SOLID BUTTON FIX */
+    div[data-testid="stHorizontalBlock"] > div:nth-child(1) button {
+        background-color: #4f46e5!important;
+        color: white!important;
+        border: none!important;
+    }
+    div[data-testid="stHorizontalBlock"] > div:nth-child(2) button {
+        background-color: #059669!important;
+        color: white!important;
+        border: none!important;
+    }
+    div[data-testid="stHorizontalBlock"] > div:nth-child(3) button {
+        background-color: #e5e7eb!important;
+        color: #1f2937!important;
+        border: none!important;
     }
    .stButton button {
         border-radius: 12px!important;
         height: 52px;
         font-weight: 700!important;
-        letter-spacing: 0.3px;
-        transition: 0.2s;
-    }
-    div[data-testid="column"]:nth-child(1) button {
-        background: #4f46e5!important;
-        color: white!important;
-        border: none!important;
-    }
-    div[data-testid="column"]:nth-child(2) button {
-        background: #059669!important;
-        color: white!important;
-        border: none!important;
-    }
-    div[data-testid="column"]:nth-child(3) button {
-        background: #f3f4f6!important;
-        color: #374151!important;
-        border: 1px solid #e5e7eb!important;
-    }
-   .stButton button:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
    .feature-box {
         background: #f8fafc;
@@ -132,12 +108,13 @@ def predict_and_show(text_to_check: str):
     probability = model.predict_proba(vec)[0]
     confidence = max(probability) * 100
 
+    st.subheader("🤖 AI Model Prediction")
     if prediction == 1:
-        st.success(f"✅ **REAL NEWS** — Confidence: {confidence:.1f}%")
+        st.success(f"✅ This looks like REAL news (confidence: {confidence:.1f}%)")
         st.balloons()
         st.progress(probability[1])
     else:
-        st.error(f"🚨 **FAKE NEWS DETECTED** — Confidence: {confidence:.1f}%")
+        st.error(f"⚠️ This looks like FAKE news (confidence: {confidence:.1f}%)")
         st.progress(probability[0])
 
     with st.expander("View Detailed Analysis"):
@@ -149,33 +126,47 @@ def web_verify_and_show(text_to_check: str):
     st.subheader("🌐 Live Web Verification")
     api_key = st.secrets.get("NEWSAPI_KEY", None)
     if not api_key:
-        st.error("NewsAPI key not configured.")
+        st.error("NewsAPI key not configured. Add NEWSAPI_KEY in Secrets.")
         return
     query = text_to_check.strip()[:120]
     with st.spinner("Checking trusted sources..."):
         try:
-            r = requests.get("https://newsapi.org/v2/everything",
-                             params={"q": query, "apiKey": api_key, "sortBy": "relevancy", "pageSize": 5, "language": "en"}, timeout=10)
-            data = r.json()
+            response = requests.get(
+                "https://newsapi.org/v2/everything",
+                params={"q": query, "apiKey": api_key, "sortBy": "relevancy", "pageSize": 5, "language": "en"},
+                timeout=10,
+            )
+            data = response.json()
         except Exception as e:
-            st.warning(f"Search failed: {e}")
+            st.warning(f"Could not search right now ({e})")
             return
+    if data.get("status")!= "ok":
+        st.warning(f"Error: {data.get('message', 'Unknown')}")
+        return
     articles = data.get("articles", [])
     if not articles:
-        st.warning("⚠️ No matching articles found. This may be unverified or fabricated.")
+        st.warning("⚠️ No matching articles found online.")
         return
-    trusted = [a for a in articles if any(d in (a.get("url") or "") for d in TRUSTED_DOMAINS)]
-    if trusted:
-        st.success(f"✅ Verified by {len(trusted)} trusted sources.")
+    trusted_hits = [a for a in articles if any(d in (a.get("url") or "") for d in TRUSTED_DOMAINS)]
+    if trusted_hits:
+        st.success(f"✅ Found {len(trusted_hits)} result(s) from trusted sources — likely REAL.")
     else:
-        st.warning("⚠️ No trusted sources found covering this story.")
+        st.warning("⚠️ Found results but none from trusted sources. Verify carefully.")
+    st.write("**Top results:**")
     for a in articles[:4]:
-        st.markdown(f"**[{a.get('title')}]({a.get('url')})** — *{a.get('source',{}).get('name','')}*")
-        st.caption((a.get('description','') or '')[:140])
+        title = a.get("title", "No title")
+        url = a.get("url", "")
+        source = (a.get("source") or {}).get("name", "")
+        desc = a.get("description", "") or ""
+        st.markdown(f"- [{title}]({url}) — *{source}*")
+        if desc:
+            st.caption(desc[:150] + "...")
 
 @st.cache_resource
 def load_artifacts():
-    return joblib.load(MODEL_PATH), joblib.load(VECTORIZER_PATH)
+    model = joblib.load(MODEL_PATH)
+    vectorizer = joblib.load(VECTORIZER_PATH)
+    return model, vectorizer
 
 # ---------- HEADER ----------
 st.markdown("""
@@ -194,7 +185,7 @@ with st.expander("ℹ️ How it works?"):
 try:
     model, vectorizer = load_artifacts()
 except FileNotFoundError:
-    st.error("Model files not found.")
+    st.error("Model files not found. Run `python train_model.py` first.")
     st.stop()
 
 if "news_input" not in st.session_state:
@@ -208,7 +199,7 @@ user_input = st.text_area("", height=200, placeholder="Paste article title or fu
 
 col1, col2, col3 = st.columns(3)
 with col1:
-    b1 = st.button("🤖 AI Check", use_container_width=True)
+    b1 = st.button("✨ AI Check", use_container_width=True)
 with col2:
     b2 = st.button("🌐 Web Verify", use_container_width=True)
 with col3:
@@ -216,12 +207,13 @@ with col3:
 
 if b1:
     if not user_input.strip():
-        st.warning("Please enter some text.")
+        st.warning("Please enter some text to analyze.")
     else:
         predict_and_show(user_input)
+
 if b2:
     if not user_input.strip():
-        st.warning("Please enter some text.")
+        st.warning("Please enter some text to analyze.")
     else:
         web_verify_and_show(user_input)
 
