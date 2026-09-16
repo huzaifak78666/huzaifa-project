@@ -1,7 +1,6 @@
 """
-app.py
-
-Streamlit front-end for the Fake News Detection project.
+app.py - Decorated Version
+Fake News Detection Using Machine Learning
 """
 
 import re
@@ -28,6 +27,68 @@ TRUSTED_DOMAINS = [
     "livemint.com", "business-standard.com", "news18.com",
 ]
 
+# ---------------- CUSTOM CSS FOR DECORATION ----------------
+st.set_page_config(page_title="Fake News Detector", page_icon="📰", layout="centered")
+
+st.markdown("""
+<style>
+   .stApp {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        background-attachment: fixed;
+    }
+    h1 {
+        background: linear-gradient(90deg, #1e3c72, #2a5298);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 800!important;
+        padding-bottom: 10px;
+    }
+   .stTextArea textarea {
+        border-radius: 15px!important;
+        border: 2px solid #2a5298!important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        font-size: 16px!important;
+    }
+   .stButton button {
+        border-radius: 12px!important;
+        height: 50px;
+        font-weight: 600!important;
+        font-size: 16px!important;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        transition: all 0.3s ease;
+        border: none!important;
+    }
+   .stButton button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    }
+    div[data-testid="column"]:nth-child(1) button {
+        background: linear-gradient(90deg, #667eea, #764ba2)!important;
+        color: white!important;
+    }
+    div[data-testid="column"]:nth-child(2) button {
+        background: linear-gradient(90deg, #11998e, #38ef7d)!important;
+        color: white!important;
+    }
+    div[data-testid="column"]:nth-child(3) button {
+        background: linear-gradient(90deg, #fc4a1a, #f7b733)!important;
+        color: white!important;
+    }
+   .stSuccess,.stError,.stWarning {
+        border-radius: 12px!important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+   .footer {
+        text-align: center;
+        padding: 20px;
+        margin-top: 30px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+</style>
+""", unsafe_allow_html=True)
+
 def clean_text(text: str) -> str:
     text = str(text).lower()
     text = re.sub(r"https?://\S+|www\.\S+", " ", text)
@@ -40,143 +101,19 @@ def clean_text(text: str) -> str:
     return " ".join(tokens)
 
 def predict_and_show(text_to_check: str):
-    """Runs the ML model on given text and displays result."""
     cleaned = clean_text(text_to_check)
     vec = vectorizer.transform([cleaned])
     prediction = model.predict(vec)[0]
     probability = model.predict_proba(vec)[0]
     confidence = max(probability) * 100
 
-    st.subheader("🤖 AI Model Prediction (pattern-based)")
+    st.markdown("### 🤖 AI Model Prediction")
     if prediction == 1:
-        st.success(f"✅ This looks like **REAL** news (confidence: {confidence:.1f}%)")
+        st.success(f"✅ **REAL NEWS** hai ye (Confidence: {confidence:.1f}%)")
+        st.balloons()
     else:
-        st.error(f"⚠ This looks like **FAKE** news (confidence: {confidence:.1f}%)")
+        st.error(f"⚠️ **FAKE NEWS** lag raha hai (Confidence: {confidence:.1f}%)")
 
-    with st.expander("See prediction probabilities"):
-        st.write(f"Fake: {probability[0]*100:.1f}%")
-        st.write(f"Real: {probability[1]*100:.1f}%")
-
-def web_verify_and_show(text_to_check: str):
-    """Searches live news via NewsAPI to see if trusted sources cover this story."""
-    st.subheader("🌐 Live Web Verification")
-
-    api_key = st.secrets.get("NEWSAPI_KEY", None)
-    if not api_key:
-        st.error("NewsAPI key not configured. Add NEWSAPI_KEY in app Secrets settings.")
-        return
-
-    query = text_to_check.strip()[:100]
-
-    with st.spinner("Searching live news for matching stories..."):
-        try:
-            response = requests.get(
-                "https://newsapi.org/v2/everything",
-                params={
-                    "q": query,
-                    "apiKey": api_key,
-                    "sortBy": "relevancy",
-                    "pageSize": 6,
-                    "language": "en",
-                },
-                timeout=10,
-            )
-            data = response.json()
-        except Exception as e:
-            st.warning(f"Could not complete web search right now ({e}). Try again in a moment.")
-            return
-
-    if data.get("status")!= "ok":
-        st.warning(f"Search service returned an error: {data.get('message', 'Unknown error')}")
-        return
-
-    articles = data.get("articles", [])
-
-    if not articles:
-        st.warning(
-            "⚠ No matching articles found online. This could mean the news is "
-            "very new, very obscure, or possibly fabricated."
-        )
-        return
-
-    trusted_hits = [
-        a for a in articles
-        if any(d in (a.get("url") or "") for d in TRUSTED_DOMAINS)
-    ]
-
-    if trusted_hits:
-        st.success(f"✅ Found {len(trusted_hits)} matching result(s) from trusted news sources — likely REAL.")
-    else:
-        st.warning(
-            "⚠ Found some results, but none from well-known trusted news sources. "
-            "Verify carefully before believing this."
-        )
-
-    st.write("**Top search results:**")
-    for a in articles[:5]:
-        title = a.get("title", "No title")
-        url = a.get("url", "")
-        source = (a.get("source") or {}).get("name", "")
-        description = a.get("description", "") or ""
-        st.markdown(f"- [{title}]({url}) — *{source}*")
-        if description:
-            st.caption(description[:150] + "...")
-
-@st.cache_resource
-def load_artifacts():
-    model = joblib.load(MODEL_PATH)
-    vectorizer = joblib.load(VECTORIZER_PATH)
-    return model, vectorizer
-
-st.set_page_config(page_title="Fake News Detector", page_icon="📰", layout="centered")
-
-st.title("📰 Fake News Detection Using Machine Learning")
-st.write(
-    "Paste a news article's headline and/or body text below. The app will give you "
-    "both an **AI pattern-based prediction** and a **live web verification check**."
-)
-
-try:
-    model, vectorizer = load_artifacts()
-except FileNotFoundError:
-    st.error(
-        "Model files not found. Please run `python train_model.py` first "
-        "to train and save the model, then restart this app."
-    )
-    st.stop()
-
-if "news_input" not in st.session_state:
-    st.session_state.news_input = ""
-
-def clear_text():
-    st.session_state.news_input = ""
-
-user_input = st.text_area(
-    "Enter news text here:", height=200, placeholder="Paste article title/content...", key="news_input"
-)
-
-col1, col2, col3 = st.columns(3)
-with col1:
-    predict_clicked = st.button("🤖 AI Check", use_container_width=True)
-with col2:
-    web_clicked = st.button("🌐 Web Verify", use_container_width=True)
-with col3:
-    st.button("🗑 Clear", use_container_width=True, on_click=clear_text)
-
-if predict_clicked:
-    if not user_input.strip():
-        st.warning("Please enter some text to analyze.")
-    else:
-        predict_and_show(user_input)
-
-if web_clicked:
-    if not user_input.strip():
-        st.warning("Please enter some text to analyze.")
-    else:
-        web_verify_and_show(user_input)
-
-st.markdown("---")
-st.caption(
-    "Model: Logistic Regression + TF-IDF | Dataset: Kaggle Fake and Real News Dataset | "
-    "Built with Streamlit, scikit-learn, pandas, NLTK, joblib, Pillow, pytesseract, NewsAPI"
-)
+    with st.expander("📊 Probability dekho"):
+        col1, col2 = st.columns(2)
+        col1.metric("Fake %", f"{probability[0]*100:.1f}%")
