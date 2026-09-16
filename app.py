@@ -1,6 +1,6 @@
 """
 app.py
--------
+
 Streamlit front-end for the Fake News Detection project.
 """
 
@@ -9,8 +9,6 @@ import string
 import joblib
 import requests
 import streamlit as st
-from PIL import Image
-import pytesseract
 
 import nltk
 from nltk.corpus import stopwords
@@ -30,7 +28,6 @@ TRUSTED_DOMAINS = [
     "livemint.com", "business-standard.com", "news18.com",
 ]
 
-
 def clean_text(text: str) -> str:
     text = str(text).lower()
     text = re.sub(r"https?://\S+|www\.\S+", " ", text)
@@ -41,7 +38,6 @@ def clean_text(text: str) -> str:
     tokens = text.split()
     tokens = [stemmer.stem(w) for w in tokens if w not in stop_words and len(w) > 2]
     return " ".join(tokens)
-
 
 def predict_and_show(text_to_check: str):
     """Runs the ML model on given text and displays result."""
@@ -55,12 +51,11 @@ def predict_and_show(text_to_check: str):
     if prediction == 1:
         st.success(f"✅ This looks like **REAL** news (confidence: {confidence:.1f}%)")
     else:
-        st.error(f"⚠️ This looks like **FAKE** news (confidence: {confidence:.1f}%)")
+        st.error(f"⚠ This looks like **FAKE** news (confidence: {confidence:.1f}%)")
 
     with st.expander("See prediction probabilities"):
         st.write(f"Fake: {probability[0]*100:.1f}%")
         st.write(f"Real: {probability[1]*100:.1f}%")
-
 
 def web_verify_and_show(text_to_check: str):
     """Searches live news via NewsAPI to see if trusted sources cover this story."""
@@ -91,7 +86,7 @@ def web_verify_and_show(text_to_check: str):
             st.warning(f"Could not complete web search right now ({e}). Try again in a moment.")
             return
 
-    if data.get("status") != "ok":
+    if data.get("status")!= "ok":
         st.warning(f"Search service returned an error: {data.get('message', 'Unknown error')}")
         return
 
@@ -99,7 +94,7 @@ def web_verify_and_show(text_to_check: str):
 
     if not articles:
         st.warning(
-            "⚠️ No matching articles found online. This could mean the news is "
+            "⚠ No matching articles found online. This could mean the news is "
             "very new, very obscure, or possibly fabricated."
         )
         return
@@ -113,7 +108,7 @@ def web_verify_and_show(text_to_check: str):
         st.success(f"✅ Found {len(trusted_hits)} matching result(s) from trusted news sources — likely REAL.")
     else:
         st.warning(
-            "⚠️ Found some results, but none from well-known trusted news sources. "
+            "⚠ Found some results, but none from well-known trusted news sources. "
             "Verify carefully before believing this."
         )
 
@@ -127,13 +122,11 @@ def web_verify_and_show(text_to_check: str):
         if description:
             st.caption(description[:150] + "...")
 
-
 @st.cache_resource
 def load_artifacts():
     model = joblib.load(MODEL_PATH)
     vectorizer = joblib.load(VECTORIZER_PATH)
     return model, vectorizer
-
 
 st.set_page_config(page_title="Fake News Detector", page_icon="📰", layout="centered")
 
@@ -155,10 +148,8 @@ except FileNotFoundError:
 if "news_input" not in st.session_state:
     st.session_state.news_input = ""
 
-
 def clear_text():
     st.session_state.news_input = ""
-
 
 user_input = st.text_area(
     "Enter news text here:", height=200, placeholder="Paste article title/content...", key="news_input"
@@ -170,7 +161,7 @@ with col1:
 with col2:
     web_clicked = st.button("🌐 Web Verify", use_container_width=True)
 with col3:
-    st.button("🗑️ Clear", use_container_width=True, on_click=clear_text)
+    st.button("🗑 Clear", use_container_width=True, on_click=clear_text)
 
 if predict_clicked:
     if not user_input.strip():
@@ -183,37 +174,6 @@ if web_clicked:
         st.warning("Please enter some text to analyze.")
     else:
         web_verify_and_show(user_input)
-
-# ---------------------------------------------------------------------------
-# Image / Photo input section (gallery upload only)
-# ---------------------------------------------------------------------------
-st.markdown("---")
-st.subheader("📷 Or check a news photo/screenshot")
-
-image_file = st.file_uploader("Upload an image (screenshot of a news article)", type=["png", "jpg", "jpeg"])
-
-if image_file is not None:
-    image = Image.open(image_file)
-    st.image(image, caption="Selected Image", use_container_width=True)
-
-    with st.spinner("Reading text from image..."):
-        try:
-            extracted_text = pytesseract.image_to_string(image)
-        except Exception as e:
-            extracted_text = ""
-            st.error(f"OCR error: {e}")
-
-    if extracted_text.strip():
-        st.text_area("Extracted Text (editable):", extracted_text, height=150, key="extracted_text")
-        ecol1, ecol2 = st.columns(2)
-        with ecol1:
-            if st.button("🤖 AI Check This Text", use_container_width=True):
-                predict_and_show(st.session_state.extracted_text)
-        with ecol2:
-            if st.button("🌐 Web Verify This Text", use_container_width=True):
-                web_verify_and_show(st.session_state.extracted_text)
-    else:
-        st.warning("Could not read any text from this image. Try a clearer, well-lit photo.")
 
 st.markdown("---")
 st.caption(
