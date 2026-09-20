@@ -52,16 +52,16 @@ st.markdown("""
         border-radius: 12px !important; font-weight: 700 !important; padding: 10px !important;
         border: none !important; font-size: 14px !important;
     }
-    div[data-testid="column"]:nth-of-type(1) div[data-testid="stButton"] button {
+    .mk-ml + div[data-testid="stButton"] button {
         background: #4f46e5 !important; color: white !important;
     }
-    div[data-testid="column"]:nth-of-type(2) div[data-testid="stButton"] button {
+    .mk-ai + div[data-testid="stButton"] button {
         background: #db2777 !important; color: white !important;
     }
-    div[data-testid="column"]:nth-of-type(3) div[data-testid="stButton"] button {
+    .mk-web + div[data-testid="stButton"] button {
         background: #059669 !important; color: white !important;
     }
-    div[data-testid="column"]:nth-of-type(4) div[data-testid="stButton"] button {
+    .mk-clear + div[data-testid="stButton"] button {
         background: #e5e7eb !important; color: #374151 !important;
     }
     div[data-testid="stAlert"] { border-radius: 14px !important; }
@@ -211,26 +211,22 @@ st.markdown("**Enter news text here:**")
 user_input = st.text_area("news_input_label", height=200, placeholder="Paste article title/content...",
                            key="news_input", label_visibility="collapsed")
 
-col1, col2, col3, col4 = st.columns(4)
+col1, col2, col3 = st.columns(3)
 with col1:
-    ml_clicked = st.button("✨ ML Check", use_container_width=True)
+    st.markdown('<div class="mk-ml"></div>', unsafe_allow_html=True)
+    check_clicked = st.button("✨ Check News", use_container_width=True)
 with col2:
-    ai_clicked = st.button("🧠 AI Reasoning", use_container_width=True)
-with col3:
+    st.markdown('<div class="mk-web"></div>', unsafe_allow_html=True)
     web_clicked = st.button("🌐 Web Verify", use_container_width=True)
-with col4:
+with col3:
+    st.markdown('<div class="mk-clear"></div>', unsafe_allow_html=True)
     st.button("🗑️ Clear", use_container_width=True, on_click=clear_text)
 
-if ml_clicked:
+if check_clicked:
     if not user_input.strip():
         st.warning("Please enter some text to analyze.")
     else:
         predict_and_show(user_input)
-
-if ai_clicked:
-    if not user_input.strip():
-        st.warning("Please enter some text to analyze.")
-    else:
         groq_check_and_show(user_input)
 
 if web_clicked:
@@ -255,15 +251,15 @@ if image_file is not None:
 
     if extracted_text.strip():
         st.text_area("Extracted Text (editable):", extracted_text, height=150, key="extracted_text")
-        ec1, ec2, ec3 = st.columns(3)
-        with ec1:
-            if st.button("✨ ML Check This", use_container_width=True):
+        pc1, pc2 = st.columns(2)
+        with pc1:
+            st.markdown('<div class="mk-ml"></div>', unsafe_allow_html=True)
+            if st.button("✨ Check This Text", use_container_width=True):
                 predict_and_show(st.session_state.extracted_text)
-        with ec2:
-            if st.button("🧠 AI Reasoning on This", use_container_width=True):
                 groq_check_and_show(st.session_state.extracted_text)
-        with ec3:
-            if st.button("🌐 Web Verify This", use_container_width=True):
+        with pc2:
+            st.markdown('<div class="mk-web"></div>', unsafe_allow_html=True)
+            if st.button("🌐 Web Verify This Text", use_container_width=True):
                 web_verify_and_show(st.session_state.extracted_text)
     else:
         st.warning("Could not read any text from this image. Try a clearer photo.")
