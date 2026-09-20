@@ -1,8 +1,8 @@
 """
 app.py
 -------
-Streamlit front-end for the Fake News Detection project, styled to match
-the custom gradient-banner design, with ML model + AI reasoning + web verify.
+Streamlit front-end for the Fake News Detection project, styled with a
+gradient banner, combining a trained ML model + AI reasoning + web verify.
 """
 
 import re
@@ -11,8 +11,6 @@ import json
 import joblib
 import requests
 import streamlit as st
-from PIL import Image
-import pytesseract
 
 import nltk
 from nltk.corpus import stopwords
@@ -54,9 +52,6 @@ st.markdown("""
     }
     .mk-ml + div[data-testid="stButton"] button {
         background: #4f46e5 !important; color: white !important;
-    }
-    .mk-ai + div[data-testid="stButton"] button {
-        background: #db2777 !important; color: white !important;
     }
     .mk-web + div[data-testid="stButton"] button {
         background: #059669 !important; color: white !important;
@@ -235,37 +230,8 @@ if web_clicked:
     else:
         web_verify_and_show(user_input)
 
-st.markdown("---")
-st.subheader("📷 Or check a news photo/screenshot")
-image_file = st.file_uploader("Upload an image (screenshot of a news article)", type=["png", "jpg", "jpeg"])
-
-if image_file is not None:
-    image = Image.open(image_file)
-    st.image(image, caption="Selected Image", use_container_width=True)
-    with st.spinner("Reading text from image..."):
-        try:
-            extracted_text = pytesseract.image_to_string(image)
-        except Exception as e:
-            extracted_text = ""
-            st.error(f"OCR error: {e}")
-
-    if extracted_text.strip():
-        st.text_area("Extracted Text (editable):", extracted_text, height=150, key="extracted_text")
-        pc1, pc2 = st.columns(2)
-        with pc1:
-            st.markdown('<div class="mk-ml"></div>', unsafe_allow_html=True)
-            if st.button("✨ Check This Text", use_container_width=True):
-                predict_and_show(st.session_state.extracted_text)
-                groq_check_and_show(st.session_state.extracted_text)
-        with pc2:
-            st.markdown('<div class="mk-web"></div>', unsafe_allow_html=True)
-            if st.button("🌐 Web Verify This Text", use_container_width=True):
-                web_verify_and_show(st.session_state.extracted_text)
-    else:
-        st.warning("Could not read any text from this image. Try a clearer photo.")
-
 st.markdown(
     '<p class="footer-caption">Model: Logistic Regression + TF-IDF | Dataset: Kaggle Fake and Real News Dataset | '
-    'AI Reasoning: Llama 3 via Groq | Built with Streamlit, scikit-learn, pandas, NLTK, joblib, pytesseract</p>',
+    'AI Reasoning: Llama 3 via Groq | Built with Streamlit, scikit-learn, pandas, NLTK, joblib</p>',
     unsafe_allow_html=True,
 )
