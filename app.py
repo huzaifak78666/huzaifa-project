@@ -221,7 +221,6 @@ if check_clicked:
     if not user_input.strip():
         st.warning("Please enter some text to analyze.")
     else:
-        predict_and_show(user_input)
         groq_check_and_show(user_input)
 
 if web_clicked:
