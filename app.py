@@ -2,7 +2,7 @@
 app.py
 -------
 Streamlit front-end for the Fake News Detection project, styled with a
-gradient banner, combining a trained ML model + AI reasoning + web verify.
+gradient banner, combining AI reasoning + live web verification + history.
 """
 
 import re
@@ -10,6 +10,7 @@ import string
 import json
 import joblib
 import requests
+import datetime
 import streamlit as st
 
 import nltk
@@ -65,24 +66,30 @@ st.markdown("""
         padding: 16px; text-align: center; margin: 6px;
     }
     .footer-caption { text-align: center; color: #6b7280; font-size: 13px; margin-top: 20px; }
+    .history-item{border-radius:12px;padding:12px 16px;margin-bottom:10px;}
+    .history-item.real{background:#f0fdf4;border:1px solid #bbf7d0;color:#14532d;}
+    .history-item.fake{background:#fef2f2;border:1px solid #fecaca;color:#7f1d1d;}
+    .history-top{display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;}
+    .history-time{opacity:0.7;font-weight:400;}
+    .history-text{font-size:14px;opacity:0.9;}
 </style>
 """, unsafe_allow_html=True)
 
 st.markdown("""
 <div class="banner">
     <h1>📰 Fake News Detection Using Machine Learning</h1>
-    <p>An intelligent system combining a trained ML model, AI reasoning, and live web verification to detect misinformation.</p>
+    <p>An intelligent system combining AI reasoning and live web verification to detect misinformation.</p>
 </div>
 """, unsafe_allow_html=True)
 
 with st.expander("ℹ️ How it works?"):
     c1, c2, c3 = st.columns(3)
     with c1:
-        st.markdown('<div class="info-card">🤖<br><b>ML Check</b><br><small>Logistic Regression + TF-IDF, trained on 44,898 Kaggle articles</small></div>', unsafe_allow_html=True)
+        st.markdown('<div class="info-card">🧠<br><b>AI Check</b><br><small>Analyzes the claim using broad general knowledge — e.g. "The Eiffel Tower is in Paris" → verified true.</small></div>', unsafe_allow_html=True)
     with c2:
-        st.markdown('<div class="info-card">🧠<br><b>AI Reasoning</b><br><small>Llama 3 (via Groq) reasons using general world knowledge</small></div>', unsafe_allow_html=True)
+        st.markdown('<div class="info-card">🌐<br><b>Web Verify</b><br><small>Cross-checks live coverage from BBC, Reuters, NDTV and other trusted sources.</small></div>', unsafe_allow_html=True)
     with c3:
-        st.markdown('<div class="info-card">🌐<br><b>Web Verify</b><br><small>Checks BBC, Reuters, NDTV and other trusted sources</small></div>', unsafe_allow_html=True)
+        st.markdown('<div class="info-card">🕘<br><b>Recent Checks</b><br><small>Keeps a running history of what you\'ve checked in this session.</small></div>', unsafe_allow_html=True)
 
 
 def clean_text(text: str) -> str:
@@ -97,27 +104,38 @@ def clean_text(text: str) -> str:
     return " ".join(tokens)
 
 
-def predict_and_show(text_to_check: str):
-    cleaned = clean_text(text_to_check)
-    vec = vectorizer.transform([cleaned])
-    prediction = model.predict(vec)[0]
-    probability = model.predict_proba(vec)[0]
-    confidence = max(probability) * 100
+def add_to_history(text, status, reason):
+    if "history" not in st.session_state:
+        st.session_state.history = []
+    entry = {
+        "text": text[:80] + ("..." if len(text) > 80 else ""),
+        "status": status,
+        "reason": reason,
+        "time": datetime.datetime.now().strftime("%I:%M %p"),
+    }
+    st.session_state.history.insert(0, entry)
+    st.session_state.history = st.session_state.history[:8]
 
-    st.markdown("#### 🤖 ML Model Prediction")
-    if prediction == 1:
-        st.success(f"✅ REAL NEWS — confidence: {confidence:.1f}%")
-    else:
-        st.error(f"🚨 FAKE NEWS — confidence: {confidence:.1f}%")
-    with st.expander("See prediction probabilities"):
-        st.write(f"Fake: {probability[0]*100:.1f}%  |  Real: {probability[1]*100:.1f}%")
+
+def render_history():
+    if "history" not in st.session_state or not st.session_state.history:
+        return
+    st.markdown("#### 🕘 Recent Checks")
+    for h in st.session_state.history:
+        cls = "real" if h["status"] == "REAL" else "fake"
+        icon = "✅" if h["status"] == "REAL" else "🚨"
+        st.markdown(f"""
+        <div class="history-item {cls}">
+            <div class="history-top"><span>{icon} <b>{h['status']}</b></span><span class="history-time">{h['time']}</span></div>
+            <div class="history-text">{h['text']}</div>
+        </div>""", unsafe_allow_html=True)
 
 
 def groq_check_and_show(text_to_check: str):
-    st.markdown("#### 🧠 AI Reasoning Check")
+    st.markdown("#### 🧠 AI Check")
     groq_key = st.secrets.get("GROQ_API_KEY", None)
     if not groq_key:
-        st.error("GROQ_API_KEY not configured in Secrets.")
+        st.error("AI service not configured.")
         return
     try:
         from groq import Groq
@@ -144,15 +162,16 @@ Respond ONLY in this exact JSON format, nothing else:
             st.success(f"✅ REAL NEWS — {reason}")
         else:
             st.error(f"🚨 FAKE NEWS — {reason}")
+        add_to_history(text_to_check, status, reason)
     except Exception as e:
-        st.warning(f"Could not complete AI reasoning check ({e}). Try again.")
+        st.warning(f"Could not complete the AI check right now ({e}). Try again.")
 
 
 def web_verify_and_show(text_to_check: str):
     st.markdown("#### 🌐 Live Web Verification")
     api_key = st.secrets.get("NEWSAPI_KEY", None)
     if not api_key:
-        st.error("NEWSAPI_KEY not configured in Secrets.")
+        st.error("Web verification service not configured.")
         return
     query = text_to_check.strip()[:100]
     with st.spinner("Searching live news..."):
@@ -229,8 +248,9 @@ if web_clicked:
     else:
         web_verify_and_show(user_input)
 
+render_history()
+
 st.markdown(
-    '<p class="footer-caption">Model: Logistic Regression + TF-IDF | Dataset: Kaggle Fake and Real News Dataset | '
-    'AI Reasoning: Llama 3 via Groq | Built with Streamlit, scikit-learn, pandas, NLTK, joblib</p>',
+    '<p class="footer-caption">Built with Streamlit, scikit-learn, pandas, NLTK, joblib, and AI-powered reasoning</p>',
     unsafe_allow_html=True,
 )
