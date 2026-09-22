@@ -37,9 +37,26 @@ st.markdown("""
 <style>
     .stApp { background: #f5f6ff; }
     .banner {
+        position: relative; overflow: hidden;
         background: linear-gradient(135deg, #6d28d9 0%, #7c3aed 30%, #2563eb 70%, #06b6d4 100%);
         border-radius: 24px; padding: 35px 25px; text-align: center; color: white;
         box-shadow: 0 10px 30px rgba(109,40,217,0.3); margin-bottom: 20px;
+    }
+    .banner-content { position: relative; z-index: 2; }
+    .particle {
+        position: absolute; opacity: 0.18; font-size: 26px; z-index: 1;
+        animation: floatUp 9s ease-in-out infinite;
+    }
+    .particle.p1 { left: 6%;  top: 70%; animation-delay: 0s; }
+    .particle.p2 { left: 18%; top: 20%; animation-delay: 1.5s; font-size: 20px; }
+    .particle.p3 { left: 32%; top: 60%; animation-delay: 3s; }
+    .particle.p4 { left: 55%; top: 15%; animation-delay: 0.8s; font-size: 22px; }
+    .particle.p5 { left: 72%; top: 65%; animation-delay: 2.2s; }
+    .particle.p6 { left: 88%; top: 25%; animation-delay: 4s; font-size: 18px; }
+    @keyframes floatUp {
+        0%   { transform: translateY(0) rotate(0deg); opacity: 0.18; }
+        50%  { transform: translateY(-18px) rotate(8deg); opacity: 0.3; }
+        100% { transform: translateY(0) rotate(0deg); opacity: 0.18; }
     }
     .banner h1 { margin: 0; font-size: 27px; font-weight: 800; color: white; }
     .banner p { margin: 12px 0 0 0; opacity: 0.9; font-size: 15px; line-height: 1.5; }
@@ -77,8 +94,16 @@ st.markdown("""
 
 st.markdown("""
 <div class="banner">
-    <h1>📰 Fake News Detection Using Machine Learning</h1>
-    <p>An intelligent system combining AI reasoning and live web verification to detect misinformation.</p>
+    <span class="particle p1">📰</span>
+    <span class="particle p2">🔍</span>
+    <span class="particle p3">✓</span>
+    <span class="particle p4">📡</span>
+    <span class="particle p5">🌐</span>
+    <span class="particle p6">🧠</span>
+    <div class="banner-content">
+        <h1>📰 Fake News Detection Using Machine Learning</h1>
+        <p>An intelligent system combining AI reasoning and live web verification to detect misinformation.</p>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -132,7 +157,7 @@ def render_history():
 
 
 def groq_check_and_show(text_to_check: str):
-    st.markdown("#### 🧠 Result")
+    st.markdown("#### 🧠 Verdict")
     groq_key = st.secrets.get("GROQ_API_KEY", None)
     if not groq_key:
         st.error("AI service not configured.")
@@ -159,10 +184,10 @@ Respond ONLY in this exact JSON format, nothing else:
         if status not in ("REAL", "FAKE"):
             status = "FAKE"
         if status == "REAL":
-            st.success(f"✅ REAL NEWS")
+            st.success("✅ REAL NEWS")
         else:
-            st.error(f"🚨 FAKE NEWS")
-       st.markdown(f"**Reasoning:** {reason}")
+            st.error("🚨 FAKE NEWS")
+        st.markdown(f"**Reasoning:** {reason}")
         add_to_history(text_to_check, status, reason)
     except Exception as e:
         st.warning(f"Could not complete the AI check right now ({e}). Try again.")
