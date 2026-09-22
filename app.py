@@ -159,9 +159,10 @@ Respond ONLY in this exact JSON format, nothing else:
         if status not in ("REAL", "FAKE"):
             status = "FAKE"
         if status == "REAL":
-            st.success(f"✅ REAL NEWS — {reason}")
+            st.success(f"✅ REAL NEWS")
         else:
-            st.error(f"🚨 FAKE NEWS — {reason}")
+            st.error(f"🚨 FAKE NEWS")
+        st.markdown(f"**Summary:** {reason}")
         add_to_history(text_to_check, status, reason)
     except Exception as e:
         st.warning(f"Could not complete the AI check right now ({e}). Try again.")
