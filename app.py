@@ -113,7 +113,7 @@ st.markdown("""
 with st.expander("ℹ️ How it works?"):
     c1, c2, c3 = st.columns(3)
     with c1:
-       st.markdown('<div class="info-card c1">⚡<br><b>Instant Reply</b><br><small>Analyzes the claim using broad general knowledge to give you a quick verdict.</small></div>', unsafe_allow_html=True)
+        st.markdown('<div class="info-card c1">⚡<br><b>Instant Reply</b><br><small>Analyzes the claim using broad general knowledge to give you a quick verdict.</small></div>', unsafe_allow_html=True)
     with c2:
         st.markdown('<div class="info-card c2">🌐<br><b>Web Verify</b><br><small>Cross-checks live coverage from BBC, Reuters, NDTV and other trusted sources.</small></div>', unsafe_allow_html=True)
     with c3:
