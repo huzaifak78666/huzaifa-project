@@ -79,9 +79,12 @@ st.markdown("""
     }
     div[data-testid="stAlert"] { border-radius: 14px !important; }
     .info-card {
-        background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px;
+        border: 1px solid #e2e8f0; border-radius: 16px;
         padding: 16px; text-align: center; margin: 6px;
     }
+    .info-card.c1 { background: #ede9fe; }
+    .info-card.c2 { background: #dbeafe; }
+    .info-card.c3 { background: #fef3c7; }
     .footer-caption { text-align: center; color: #6b7280; font-size: 13px; margin-top: 20px; }
     .history-item{border-radius:12px;padding:12px 16px;margin-bottom:10px;}
     .history-item.real{background:#f0fdf4;border:1px solid #bbf7d0;color:#14532d;}
@@ -110,11 +113,11 @@ st.markdown("""
 with st.expander("ℹ️ How it works?"):
     c1, c2, c3 = st.columns(3)
     with c1:
-       st.markdown('<div class="info-card">⚡<br><b>Instant Reply</b><br><small>Analyzes the claim using broad general knowledge to give you a quick verdict.</small></div>', unsafe_allow_html=True)
+       st.markdown('<div class="info-card c1">⚡<br><b>Instant Reply</b><br><small>Analyzes the claim using broad general knowledge to give you a quick verdict.</small></div>', unsafe_allow_html=True)
     with c2:
-        st.markdown('<div class="info-card">🌐<br><b>Web Verify</b><br><small>Cross-checks live coverage from BBC, Reuters, NDTV and other trusted sources.</small></div>', unsafe_allow_html=True)
+        st.markdown('<div class="info-card c2">🌐<br><b>Web Verify</b><br><small>Cross-checks live coverage from BBC, Reuters, NDTV and other trusted sources.</small></div>', unsafe_allow_html=True)
     with c3:
-        st.markdown('<div class="info-card">🕘<br><b>Recent Checks</b><br><small>Keeps a running history of what you\'ve checked in this session.</small></div>', unsafe_allow_html=True)
+        st.markdown('<div class="info-card c3">🕘<br><b>Recent Checks</b><br><small>Keeps a running history of what you\'ve checked in this session.</small></div>', unsafe_allow_html=True)
 
 
 def clean_text(text: str) -> str:
