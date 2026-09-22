@@ -162,7 +162,7 @@ Respond ONLY in this exact JSON format, nothing else:
             st.success(f"✅ REAL NEWS")
         else:
             st.error(f"🚨 FAKE NEWS")
-        st.markdown(f"**Summary:** {reason}")
+       st.markdown(f"**Reasoning:** {reason}")
         add_to_history(text_to_check, status, reason)
     except Exception as e:
         st.warning(f"Could not complete the AI check right now ({e}). Try again.")
