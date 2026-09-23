@@ -160,7 +160,7 @@ def render_history():
 
 
 def groq_check_and_show(text_to_check: str):
-    st.markdown("#### 🧠 Verdict")
+    st.markdown("#### 🧠 reasioning")
     groq_key = st.secrets.get("GROQ_API_KEY", None)
     if not groq_key:
         st.error("AI service not configured.")
