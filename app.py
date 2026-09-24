@@ -60,9 +60,15 @@ st.markdown("""
     }
     .banner h1 { margin: 0; font-size: 27px; font-weight: 800; color: white; }
     .banner p { margin: 12px 0 0 0; opacity: 0.9; font-size: 15px; line-height: 1.5; }
-    .stTextArea textarea {
+        .stTextArea textarea {
         border: 2px solid #d1d5db !important; border-radius: 16px !important;
         padding: 16px !important; font-size: 15px !important; background: white !important;
+        box-shadow: 0 4px 14px rgba(109,40,217,0.08) !important;
+        transition: all 0.25s ease !important;
+    }
+    .stTextArea textarea:focus {
+        border: 2px solid #7c3aed !important;
+        box-shadow: 0 0 0 4px rgba(124,58,237,0.15), 0 6px 18px rgba(109,40,217,0.15) !important;
     }
     div[data-testid="stButton"] button {
         border-radius: 12px !important; font-weight: 700 !important; padding: 10px !important;
