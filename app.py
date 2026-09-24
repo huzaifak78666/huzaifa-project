@@ -115,23 +115,66 @@ st.markdown("""
     .history-time{opacity:0.7;font-weight:400;}
     .history-text{font-size:14px;opacity:0.9;}
     
-    /* --- NEW REASONING CARD DESIGN --- */
+    /* --- PROFESSIONAL VERDICT & REASONING CARDS --- */
+    .verdict-card {
+        border-radius: 12px;
+        padding: 14px 18px;
+        margin: 12px 0px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 700;
+        font-size: 15px;
+        letter-spacing: 0.3px;
+    }
+    .verdict-card.real {
+        background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+        border: 1px solid #6ee7b7;
+        color: #065f46;
+    }
+    .verdict-card.fake {
+        background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+        border: 1px solid #fca5a5;
+        color: #991b1b;
+    }
+    .verdict-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+    .verdict-icon.real { background: #10b981; color: white; }
+    .verdict-icon.fake { background: #ef4444; color: white; }
+
     .reasoning-card {
         background: white;
-        border-left: 4px solid #7c3aed;
-        border-radius: 12px;
-        padding: 16px 20px;
-        margin: 12px 0px;
-        color: #1e293b;
-        font-size: 15px;
-        line-height: 1.6;
-        box-shadow: 0 4px 15px rgba(124,58,237,0.08);
-        border-top: 1px solid #e2e8f0;
-        border-right: 1px solid #e2e8f0;
-        border-bottom: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 0;
+        margin: 16px 0px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        border: 1px solid #e2e8f0;
+        overflow: hidden;
     }
-    .reasoning-card b {
+    .reasoning-header {
+        background: #f8fafc;
+        padding: 12px 18px;
+        border-bottom: 1px solid #e2e8f0;
+        font-weight: 700;
         color: #6d28d9;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .reasoning-body {
+        padding: 16px 18px;
+        color: #334155;
+        font-size: 15px;
+        line-height: 1.7;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -201,7 +244,7 @@ def render_history():
 
 
 def groq_check_and_show(text_to_check: str):
-    st.markdown("#### 🧠 Reasoning")
+    st.markdown("#### 💡 Reasoning")
     groq_key = st.secrets.get("GROQ_API_KEY", None)
     if not groq_key:
         st.error("AI service not configured.")
@@ -228,10 +271,26 @@ Respond ONLY in this exact JSON format, nothing else:
         if status not in ("REAL", "FAKE"):
             status = "FAKE"
         if status == "REAL":
-            st.success("✅ REAL NEWS")
+            st.markdown(f'''
+            <div class="verdict-card real">
+                <div class="verdict-icon real">✓</div>
+                <div>REAL NEWS - Verified as True</div>
+            </div>
+            ''', unsafe_allow_html=True)
         else:
-            st.error("🚨 FAKE NEWS")
-        st.markdown(f'<div class="reasoning-card"><b>💡 Reasoning:</b><br>{reason}</div>', unsafe_allow_html=True)
+            st.markdown(f'''
+            <div class="verdict-card fake">
+                <div class="verdict-icon fake">!</div>
+                <div>FAKE NEWS - Potential Misinformation Detected</div>
+            </div>
+            ''', unsafe_allow_html=True)
+        
+        st.markdown(f'''
+        <div class="reasoning-card">
+            <div class="reasoning-header">💡 Reasoning</div>
+            <div class="reasoning-body">{reason}</div>
+        </div>
+        ''', unsafe_allow_html=True)
         add_to_history(text_to_check, status, reason)
     except Exception as e:
         st.warning(f"Could not complete the AI check right now ({e}). Try again.")
