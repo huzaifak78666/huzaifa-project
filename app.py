@@ -90,14 +90,14 @@ st.markdown("""
     div[data-testid="stButton"] button:active {
         transform: translateY(0px) !important;
     }
-    .mk-ml + div[data-testid="stButton"] button {
-        background: #4f46e5 !important; color: white !important;
+       .mk-ml + div[data-testid="stButton"] button {
+        background: linear-gradient(135deg, #7c3aed, #6d28d9) !important; color: white !important;
     }
     .mk-web + div[data-testid="stButton"] button {
-        background: #059669 !important; color: white !important;
+        background: linear-gradient(135deg, #06b6d4, #0891b2) !important; color: white !important;
     }
     .mk-clear + div[data-testid="stButton"] button {
-        background: #e5e7eb !important; color: #374151 !important;
+        background: #f1f5f9 !important; color: #64748b !important; border: 1.5px solid #e2e8f0 !important;
     }
     div[data-testid="stAlert"] { border-radius: 14px !important; }
     .info-card {
