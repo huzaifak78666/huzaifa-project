@@ -77,9 +77,18 @@ st.markdown("""
         border: 2px solid #7c3aed !important;
         box-shadow: 0 0 0 4px rgba(124,58,237,0.15), 0 6px 18px rgba(109,40,217,0.15) !important;
     }
-    div[data-testid="stButton"] button {
-        border-radius: 12px !important; font-weight: 700 !important; padding: 10px !important;
-        border: none !important; font-size: 14px !important;
+       div[data-testid="stButton"] button {
+        border-radius: 14px !important; font-weight: 700 !important; padding: 14px !important;
+        border: none !important; font-size: 15px !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+        transition: all 0.2s ease !important;
+    }
+    div[data-testid="stButton"] button:hover {
+        transform: translateY(-3px) !important;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
+    }
+    div[data-testid="stButton"] button:active {
+        transform: translateY(0px) !important;
     }
     .mk-ml + div[data-testid="stButton"] button {
         background: #4f46e5 !important; color: white !important;
