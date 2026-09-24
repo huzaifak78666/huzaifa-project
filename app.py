@@ -35,7 +35,7 @@ st.set_page_config(page_title="Fake News Detector", page_icon="📰", layout="ce
 
 st.markdown("""
 <style>
-           .stApp {
+    .stApp {
         background-color: #f8f9ff;
         background-image:
             radial-gradient(at 0% 0%, rgba(124,58,237,0.10) 0px, transparent 50%),
@@ -67,7 +67,7 @@ st.markdown("""
     }
     .banner h1 { margin: 0; font-size: 27px; font-weight: 800; color: white; }
     .banner p { margin: 12px 0 0 0; opacity: 0.9; font-size: 15px; line-height: 1.5; }
-        .stTextArea textarea {
+    .stTextArea textarea {
         border: 2px solid #d1d5db !important; border-radius: 16px !important;
         padding: 16px !important; font-size: 15px !important; background: white !important;
         box-shadow: 0 4px 14px rgba(109,40,217,0.08) !important;
@@ -77,7 +77,7 @@ st.markdown("""
         border: 2px solid #7c3aed !important;
         box-shadow: 0 0 0 4px rgba(124,58,237,0.15), 0 6px 18px rgba(109,40,217,0.15) !important;
     }
-       div[data-testid="stButton"] button {
+    div[data-testid="stButton"] button {
         border-radius: 14px !important; font-weight: 700 !important; padding: 14px !important;
         border: none !important; font-size: 15px !important;
         box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
@@ -90,7 +90,7 @@ st.markdown("""
     div[data-testid="stButton"] button:active {
         transform: translateY(0px) !important;
     }
-       .mk-ml + div[data-testid="stButton"] button {
+    .mk-ml + div[data-testid="stButton"] button {
         background: linear-gradient(135deg, #7c3aed, #6d28d9) !important; color: white !important;
     }
     .mk-web + div[data-testid="stButton"] button {
@@ -114,6 +114,25 @@ st.markdown("""
     .history-top{display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;}
     .history-time{opacity:0.7;font-weight:400;}
     .history-text{font-size:14px;opacity:0.9;}
+    
+    /* --- NEW REASONING CARD DESIGN --- */
+    .reasoning-card {
+        background: white;
+        border-left: 4px solid #7c3aed;
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin: 12px 0px;
+        color: #1e293b;
+        font-size: 15px;
+        line-height: 1.6;
+        box-shadow: 0 4px 15px rgba(124,58,237,0.08);
+        border-top: 1px solid #e2e8f0;
+        border-right: 1px solid #e2e8f0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .reasoning-card b {
+        color: #6d28d9;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -132,7 +151,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-with st.expander("ℹ️ How it works?"):
+with st.expander("ℹ How it works?"):
     c1, c2, c3 = st.columns(3)
     with c1:
         st.markdown('<div class="info-card c1">⚡<br><b>Instant Reply</b><br><small>Analyzes the claim using broad general knowledge to give you a quick verdict.</small></div>', unsafe_allow_html=True)
@@ -182,7 +201,7 @@ def render_history():
 
 
 def groq_check_and_show(text_to_check: str):
-    st.markdown("#### 🧠 reasioning")
+    st.markdown("#### 🧠 Reasoning")
     groq_key = st.secrets.get("GROQ_API_KEY", None)
     if not groq_key:
         st.error("AI service not configured.")
@@ -212,7 +231,7 @@ Respond ONLY in this exact JSON format, nothing else:
             st.success("✅ REAL NEWS")
         else:
             st.error("🚨 FAKE NEWS")
-                  st.markdown(f'<div class="reasoning-card"><b>💡 Reasoning:</b><br>{reason}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="reasoning-card"><b>💡 Reasoning:</b><br>{reason}</div>', unsafe_allow_html=True)
         add_to_history(text_to_check, status, reason)
     except Exception as e:
         st.warning(f"Could not complete the AI check right now ({e}). Try again.")
@@ -241,13 +260,13 @@ def web_verify_and_show(text_to_check: str):
         return
     articles = [a for a in data.get("articles", []) if a.get("description")]
     if not articles:
-        st.warning("⚠️ No matching coverage found online.")
+        st.warning("⚠ No matching coverage found online.")
         return
     trusted_hits = [a for a in articles if any(d in (a.get("url") or "") for d in TRUSTED_DOMAINS)]
     if trusted_hits:
         st.success(f"✅ Found {len(trusted_hits)} result(s) from trusted sources.")
     else:
-        st.warning("⚠️ No trusted sources found matching this story.")
+        st.warning("⚠ No trusted sources found matching this story.")
     for a in articles[:4]:
         source = (a.get("source") or {}).get("name", "")
         st.markdown(f"- [{a.get('title','No title')}]({a.get('url','')}) — *{source}*")
@@ -285,7 +304,7 @@ with col2:
     web_clicked = st.button("🌐 Web Verify", use_container_width=True)
 with col3:
     st.markdown('<div class="mk-clear"></div>', unsafe_allow_html=True)
-    st.button("🗑️ Clear", use_container_width=True, on_click=clear_text)
+    st.button("🗑 Clear", use_container_width=True, on_click=clear_text)
 
 if check_clicked:
     if not user_input.strip():
