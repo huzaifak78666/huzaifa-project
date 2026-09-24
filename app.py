@@ -35,10 +35,13 @@ st.set_page_config(page_title="Fake News Detector", page_icon="📰", layout="ce
 
 st.markdown("""
 <style>
-        .stApp {
-        background-color: #f5f6ff;
-        background-image: radial-gradient(#d8d4fa 1.2px, transparent 1.2px);
-        background-size: 24px 24px;
+           .stApp {
+        background-color: #f8f9ff;
+        background-image:
+            radial-gradient(at 0% 0%, rgba(124,58,237,0.10) 0px, transparent 50%),
+            radial-gradient(at 100% 0%, rgba(37,99,235,0.10) 0px, transparent 50%),
+            radial-gradient(at 100% 100%, rgba(6,182,212,0.08) 0px, transparent 50%),
+            radial-gradient(at 0% 100%, rgba(219,39,119,0.06) 0px, transparent 50%);
     }
     .banner {
         position: relative; overflow: hidden;
