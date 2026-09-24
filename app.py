@@ -212,7 +212,7 @@ Respond ONLY in this exact JSON format, nothing else:
             st.success("✅ REAL NEWS")
         else:
             st.error("🚨 FAKE NEWS")
-        st.markdown(f"**Reasoning:** {reason}")
+              st.markdown(f'<div class="reasoning-card"><b>💡 Reasoning:</b> {reason}</div>', unsafe_allow_html=True)
         add_to_history(text_to_check, status, reason)
     except Exception as e:
         st.warning(f"Could not complete the AI check right now ({e}). Try again.")
