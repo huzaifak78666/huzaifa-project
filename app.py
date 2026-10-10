@@ -114,7 +114,7 @@ st.markdown("""
     .history-top{display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;}
     .history-time{opacity:0.7;font-weight:400;}
     .history-text{font-size:14px;opacity:0.9;}
-    
+
     /* --- PROFESSIONAL VERDICT & REASONING CARDS --- */
     .verdict-card {
         border-radius: 12px;
@@ -176,6 +176,32 @@ st.markdown("""
         font-size: 15px;
         line-height: 1.7;
     }
+
+    /* --- AURORA FLOATING BACKGROUND --- */
+    .stApp::before, .stApp::after {
+        content: ""; position: fixed; border-radius: 50%;
+        filter: blur(90px); z-index: 0; pointer-events: none;
+    }
+    .stApp::before {
+        width: 520px; height: 520px; top: -140px; left: -140px;
+        background: radial-gradient(circle, rgba(124,58,237,0.35), transparent 70%);
+        animation: drift1 18s ease-in-out infinite alternate;
+    }
+    .stApp::after {
+        width: 600px; height: 600px; bottom: -180px; right: -160px;
+        background: radial-gradient(circle, rgba(6,182,212,0.30), transparent 70%);
+        animation: drift2 22s ease-in-out infinite alternate;
+    }
+    @keyframes drift1 {
+        from { transform: translate(0, 0) scale(1); }
+        to   { transform: translate(140px, 90px) scale(1.15); }
+    }
+    @keyframes drift2 {
+        from { transform: translate(0, 0) scale(1); }
+        to   { transform: translate(-150px, -100px) scale(1.2); }
+    }
+    .block-container { position: relative; z-index: 1; }
+    header[data-testid="stHeader"] { background: transparent; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -284,7 +310,7 @@ Respond ONLY in this exact JSON format, nothing else:
                 <div>FAKE NEWS - Potential Misinformation Detected</div>
             </div>
             ''', unsafe_allow_html=True)
-        
+
         st.markdown(f'''
         <div class="reasoning-card">
             <div class="reasoning-header">💡 Reasoning</div>
