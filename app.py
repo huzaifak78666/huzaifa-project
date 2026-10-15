@@ -1,6 +1,6 @@
 """
 app.py
--------
+
 Streamlit front-end for the Fake News Detection project, styled with a
 gradient banner, combining AI reasoning + live web verification + history.
 """
@@ -35,7 +35,7 @@ st.set_page_config(page_title="Fake News Detector", page_icon="📰", layout="ce
 
 st.markdown("""
 <style>
-    .stApp {
+   .stApp {
         background-color: #f8f9ff;
         background-image:
             radial-gradient(at 0% 0%, rgba(124,58,237,0.10) 0px, transparent 50%),
@@ -43,80 +43,72 @@ st.markdown("""
             radial-gradient(at 100% 100%, rgba(6,182,212,0.08) 0px, transparent 50%),
             radial-gradient(at 0% 100%, rgba(219,39,119,0.06) 0px, transparent 50%);
     }
-    .banner {
+   .banner {
         position: relative; overflow: hidden;
         background: linear-gradient(135deg, #6d28d9 0%, #7c3aed 30%, #2563eb 70%, #06b6d4 100%);
         border-radius: 24px; padding: 35px 25px; text-align: center; color: white;
         box-shadow: 0 10px 30px rgba(109,40,217,0.3); margin-bottom: 20px;
     }
-    .banner-content { position: relative; z-index: 2; }
-    .particle {
+   .banner-content { position: relative; z-index: 2; }
+   .particle {
         position: absolute; opacity: 0.18; font-size: 26px; z-index: 1;
         animation: floatUp 9s ease-in-out infinite;
     }
-    .particle.p1 { left: 6%;  top: 70%; animation-delay: 0s; }
-    .particle.p2 { left: 18%; top: 20%; animation-delay: 1.5s; font-size: 20px; }
-    .particle.p3 { left: 32%; top: 60%; animation-delay: 3s; }
-    .particle.p4 { left: 55%; top: 15%; animation-delay: 0.8s; font-size: 22px; }
-    .particle.p5 { left: 72%; top: 65%; animation-delay: 2.2s; }
-    .particle.p6 { left: 88%; top: 25%; animation-delay: 4s; font-size: 18px; }
+   .particle.p1 { left: 6%; top: 70%; animation-delay: 0s; }
+   .particle.p2 { left: 18%; top: 20%; animation-delay: 1.5s; font-size: 20px; }
+   .particle.p3 { left: 32%; top: 60%; animation-delay: 3s; }
+   .particle.p4 { left: 55%; top: 15%; animation-delay: 0.8s; font-size: 22px; }
+   .particle.p5 { left: 72%; top: 65%; animation-delay: 2.2s; }
+   .particle.p6 { left: 88%; top: 25%; animation-delay: 4s; font-size: 18px; }
     @keyframes floatUp {
-        0%   { transform: translateY(0) rotate(0deg); opacity: 0.18; }
-        50%  { transform: translateY(-18px) rotate(8deg); opacity: 0.3; }
+        0% { transform: translateY(0) rotate(0deg); opacity: 0.18; }
+        50% { transform: translateY(-18px) rotate(8deg); opacity: 0.3; }
         100% { transform: translateY(0) rotate(0deg); opacity: 0.18; }
     }
-    .banner h1 { margin: 0; font-size: 27px; font-weight: 800; color: white; }
-    .banner p { margin: 12px 0 0 0; opacity: 0.9; font-size: 15px; line-height: 1.5; }
-    .stTextArea textarea {
-        border: 2px solid #d1d5db !important; border-radius: 16px !important;
-        padding: 16px !important; font-size: 15px !important; background: white !important;
-        box-shadow: 0 4px 14px rgba(109,40,217,0.08) !important;
-        transition: all 0.25s ease !important;
+   .banner h1 { margin: 0; font-size: 27px; font-weight: 800; color: white; }
+   .banner p { margin: 12px 0 0 0; opacity: 0.9; font-size: 15px; line-height: 1.5; }
+   .stTextArea textarea {
+        border: 2px solid #d1d5db!important; border-radius: 16px!important;
+        padding: 16px!important; font-size: 15px!important; background: white!important;
+        box-shadow: 0 4px 14px rgba(109,40,217,0.08)!important;
+        transition: all 0.25s ease!important;
     }
-    .stTextArea textarea:focus {
-        border: 2px solid #7c3aed !important;
-        box-shadow: 0 0 0 4px rgba(124,58,237,0.15), 0 6px 18px rgba(109,40,217,0.15) !important;
+   .stTextArea textarea:focus {
+        border: 2px solid #7c3aed!important;
+        box-shadow: 0 0 0 4px rgba(124,58,237,0.15), 0 6px 18px rgba(109,40,217,0.15)!important;
     }
     div[data-testid="stButton"] button {
-        border-radius: 14px !important; font-weight: 700 !important; padding: 14px !important;
-        border: none !important; font-size: 15px !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
-        transition: all 0.2s ease !important;
+        border-radius: 14px!important; font-weight: 700!important; padding: 14px!important;
+        border: none!important; font-size: 15px!important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08)!important;
+        transition: all 0.2s ease!important;
     }
     div[data-testid="stButton"] button:hover {
-        transform: translateY(-3px) !important;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
+        transform: translateY(-3px)!important;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15)!important;
     }
     div[data-testid="stButton"] button:active {
-        transform: translateY(0px) !important;
+        transform: translateY(0px)!important;
     }
-    .mk-ml + div[data-testid="stButton"] button {
-        background: linear-gradient(135deg, #7c3aed, #6d28d9) !important; color: white !important;
+   .mk-ml + div[data-testid="stButton"] button {
+        background: linear-gradient(135deg, #7c3aed, #6d28d9)!important; color: white!important;
     }
-    .mk-web + div[data-testid="stButton"] button {
-        background: linear-gradient(135deg, #06b6d4, #0891b2) !important; color: white !important;
+   .mk-web + div[data-testid="stButton"] button {
+        background: linear-gradient(135deg, #06b6d4, #0891b2)!important; color: white!important;
     }
-    .mk-clear + div[data-testid="stButton"] button {
-        background: #f1f5f9 !important; color: #64748b !important; border: 1.5px solid #e2e8f0 !important;
+   .mk-clear + div[data-testid="stButton"] button {
+        background: #f1f5f9!important; color: #64748b!important; border: 1.5px solid #e2e8f0!important;
     }
-    div[data-testid="stAlert"] { border-radius: 14px !important; }
-    .info-card {
-        border: 1px solid #e2e8f0; border-radius: 16px;
-        padding: 16px; text-align: center; margin: 6px;
-    }
-    .info-card.c1 { background: #ede9fe; }
-    .info-card.c2 { background: #dbeafe; }
-    .info-card.c3 { background: #fef3c7; }
-    .footer-caption { text-align: center; color: #6b7280; font-size: 13px; margin-top: 20px; }
-    .history-item{border-radius:12px;padding:12px 16px;margin-bottom:10px;}
-    .history-item.real{background:#f0fdf4;border:1px solid #bbf7d0;color:#14532d;}
-    .history-item.fake{background:#fef2f2;border:1px solid #fecaca;color:#7f1d1d;}
-    .history-top{display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;}
-    .history-time{opacity:0.7;font-weight:400;}
-    .history-text{font-size:14px;opacity:0.9;}
+    div[data-testid="stAlert"] { border-radius: 14px!important; }
+   .footer-caption { text-align: center; color: #6b7280; font-size: 13px; margin-top: 20px; }
+   .history-item{border-radius:12px;padding:12px 16px;margin-bottom:10px;}
+   .history-item.real{background:#f0fdf4;border:1px solid #bbf7d0;color:#14532d;}
+   .history-item.fake{background:#fef2f2;border:1px solid #fecaca;color:#7f1d1d;}
+   .history-top{display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;}
+   .history-time{opacity:0.7;font-weight:400;}
+   .history-text{font-size:14px;opacity:0.9;}
 
-    /* --- PROFESSIONAL VERDICT & REASONING CARDS --- */
-    .verdict-card {
+   .verdict-card {
         border-radius: 12px;
         padding: 14px 18px;
         margin: 12px 0px;
@@ -127,17 +119,17 @@ st.markdown("""
         font-size: 15px;
         letter-spacing: 0.3px;
     }
-    .verdict-card.real {
+   .verdict-card.real {
         background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
         border: 1px solid #6ee7b7;
         color: #065f46;
     }
-    .verdict-card.fake {
+   .verdict-card.fake {
         background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
         border: 1px solid #fca5a5;
         color: #991b1b;
     }
-    .verdict-icon {
+   .verdict-icon {
         width: 32px;
         height: 32px;
         border-radius: 50%;
@@ -147,10 +139,10 @@ st.markdown("""
         font-size: 18px;
         flex-shrink: 0;
     }
-    .verdict-icon.real { background: #10b981; color: white; }
-    .verdict-icon.fake { background: #ef4444; color: white; }
+   .verdict-icon.real { background: #10b981; color: white; }
+   .verdict-icon.fake { background: #ef4444; color: white; }
 
-    .reasoning-card {
+   .reasoning-card {
         background: white;
         border-radius: 14px;
         padding: 0;
@@ -159,7 +151,7 @@ st.markdown("""
         border: 1px solid #e2e8f0;
         overflow: hidden;
     }
-    .reasoning-header {
+   .reasoning-header {
         background: #f8fafc;
         padding: 12px 18px;
         border-bottom: 1px solid #e2e8f0;
@@ -170,37 +162,79 @@ st.markdown("""
         align-items: center;
         gap: 8px;
     }
-    .reasoning-body {
+   .reasoning-body {
         padding: 16px 18px;
         color: #334155;
         font-size: 15px;
         line-height: 1.7;
     }
 
-    /* --- AURORA FLOATING BACKGROUND --- */
-    .stApp::before, .stApp::after {
+    /* --- PRO HOW IT WORKS --- */
+    div[data-testid="stExpander"] {
+        background: white!important;
+        border: 1px solid #e0e7ff!important;
+        border-radius: 20px!important;
+        box-shadow: 0 8px 24px rgba(124,58,237,0.08)!important;
+    }
+    div[data-testid="stExpander"] summary {
+        background: linear-gradient(135deg, #f8f7ff 0%, #eef2ff 100%)!important;
+        padding: 18px 22px!important;
+        font-weight: 700!important;
+        font-size: 16px!important;
+        color: #4f46e5!important;
+        border-radius: 20px!important;
+    }
+   .info-card {
+        border-radius: 20px!important;
+        padding: 24px 18px!important;
+        text-align: center!important;
+        height: 190px;
+        transition: all 0.35s ease!important;
+        border: 1.5px solid transparent!important;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+    }
+   .info-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 16px 32px rgba(0,0,0,0.08)!important;
+    }
+   .info-card.c1 { background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)!important; border-color: #ddd6fe!important; }
+   .info-card.c2 { background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)!important; border-color: #bfdbfe!important; }
+   .info-card.c3 { background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%)!important; border-color: #fde68a!important; }
+   .info-card.icon-pro {
+        width: 50px; height: 50px; background: white; border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 22px; box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+        margin-bottom: 12px;
+    }
+   .info-card b { font-size: 16px; color: #1e293b; margin-bottom: 6px; }
+   .info-card small { color: #475569; font-size: 13.5px; line-height: 1.6; }
+
+   .stApp::before,.stApp::after {
         content: ""; position: fixed; border-radius: 50%;
         filter: blur(90px); z-index: 0; pointer-events: none;
     }
-    .stApp::before {
+   .stApp::before {
         width: 520px; height: 520px; top: -140px; left: -140px;
         background: radial-gradient(circle, rgba(124,58,237,0.35), transparent 70%);
         animation: drift1 18s ease-in-out infinite alternate;
     }
-    .stApp::after {
+   .stApp::after {
         width: 600px; height: 600px; bottom: -180px; right: -160px;
         background: radial-gradient(circle, rgba(6,182,212,0.30), transparent 70%);
         animation: drift2 22s ease-in-out infinite alternate;
     }
     @keyframes drift1 {
         from { transform: translate(0, 0) scale(1); }
-        to   { transform: translate(140px, 90px) scale(1.15); }
+        to { transform: translate(140px, 90px) scale(1.15); }
     }
     @keyframes drift2 {
         from { transform: translate(0, 0) scale(1); }
-        to   { transform: translate(-150px, -100px) scale(1.2); }
+        to { transform: translate(-150px, -100px) scale(1.2); }
     }
-    .block-container { position: relative; z-index: 1; }
+   .block-container { position: relative; z-index: 1; }
     header[data-testid="stHeader"] { background: transparent; }
 </style>
 """, unsafe_allow_html=True)
@@ -220,15 +254,14 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-with st.expander("ℹ How it works?"):
-    c1, c2, c3 = st.columns(3)
+with st.expander("✨ How it works? — Click to explore"):
+    c1, c2, c3 = st.columns(3, gap="medium")
     with c1:
-        st.markdown('<div class="info-card c1">⚡<br><b>Instant Reply</b><br><small>Analyzes the claim using broad general knowledge to give you a quick verdict.</small></div>', unsafe_allow_html=True)
+        st.markdown('<div class="info-card c1"><div class="icon-pro">⚡</div><b>Instant Reply</b><small>Analyzes the claim using broad general knowledge to give you a quick verdict.</small></div>', unsafe_allow_html=True)
     with c2:
-        st.markdown('<div class="info-card c2">🌐<br><b>Web Verify</b><br><small>Cross-checks live coverage from BBC, Reuters, NDTV and other trusted sources.</small></div>', unsafe_allow_html=True)
+        st.markdown('<div class="info-card c2"><div class="icon-pro">🌐</div><b>Web Verify</b><small>Cross-checks live coverage from BBC, Reuters, NDTV and other trusted sources.</small></div>', unsafe_allow_html=True)
     with c3:
-        st.markdown('<div class="info-card c3">🕘<br><b>Recent Checks</b><br><small>Keeps a running history of what you\'ve checked in this session.</small></div>', unsafe_allow_html=True)
-
+        st.markdown('<div class="info-card c3"><div class="icon-pro">🕒</div><b>Recent Checks</b><small>Keeps a running history of what you\'ve checked in this session.</small></div>', unsafe_allow_html=True)
 
 def clean_text(text: str) -> str:
     text = str(text).lower()
@@ -240,7 +273,6 @@ def clean_text(text: str) -> str:
     tokens = text.split()
     tokens = [stemmer.stem(w) for w in tokens if w not in stop_words and len(w) > 2]
     return " ".join(tokens)
-
 
 def add_to_history(text, status, reason):
     if "history" not in st.session_state:
@@ -254,7 +286,6 @@ def add_to_history(text, status, reason):
     st.session_state.history.insert(0, entry)
     st.session_state.history = st.session_state.history[:8]
 
-
 def render_history():
     if "history" not in st.session_state or not st.session_state.history:
         return
@@ -267,7 +298,6 @@ def render_history():
             <div class="history-top"><span>{icon} <b>{h['status']}</b></span><span class="history-time">{h['time']}</span></div>
             <div class="history-text">{h['text']}</div>
         </div>""", unsafe_allow_html=True)
-
 
 def groq_check_and_show(text_to_check: str):
     st.markdown("#### 💡 Reasoning")
@@ -321,7 +351,6 @@ Respond ONLY in this exact JSON format, nothing else:
     except Exception as e:
         st.warning(f"Could not complete the AI check right now ({e}). Try again.")
 
-
 def web_verify_and_show(text_to_check: str):
     st.markdown("#### 🌐 Live Web Verification")
     api_key = st.secrets.get("NEWSAPI_KEY", None)
@@ -340,7 +369,7 @@ def web_verify_and_show(text_to_check: str):
         except Exception as e:
             st.warning(f"Web search failed ({e}). Try again.")
             return
-    if data.get("status") != "ok":
+    if data.get("status")!= "ok":
         st.warning(f"Search error: {data.get('message', 'Unknown error')}")
         return
     articles = [a for a in data.get("articles", []) if a.get("description")]
@@ -356,11 +385,9 @@ def web_verify_and_show(text_to_check: str):
         source = (a.get("source") or {}).get("name", "")
         st.markdown(f"- [{a.get('title','No title')}]({a.get('url','')}) — *{source}*")
 
-
 @st.cache_resource
 def load_artifacts():
     return joblib.load(MODEL_PATH), joblib.load(VECTORIZER_PATH)
-
 
 try:
     model, vectorizer = load_artifacts()
@@ -371,10 +398,8 @@ except FileNotFoundError:
 if "news_input" not in st.session_state:
     st.session_state.news_input = ""
 
-
 def clear_text():
     st.session_state.news_input = ""
-
 
 st.markdown("**Enter news text here:**")
 user_input = st.text_area("news_input_label", height=200, placeholder="Paste article title/content...",
