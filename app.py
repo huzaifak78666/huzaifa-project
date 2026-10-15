@@ -408,4 +408,4 @@ render_history()
 st.markdown(
     '<p class="footer-caption">Built with Streamlit, scikit-learn, pandas, NLTK, joblib, and AI-powered reasoning</p>',
     unsafe_allow_html=True,
-) ye code tha
+)
